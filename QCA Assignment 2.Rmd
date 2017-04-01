@@ -1,0 +1,40 @@
+---
+title: "QCA Assignment 2"
+author: "Akira Sasaki"
+date: "31/03/2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+install.packages("knitr")
+library(knitr)
+options(width=80)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, error = TRUE)
+opts_chunk$set(fig.path='figs/', cache.path='cache/graphics-', 
+           fig.align='center', fig.width = 5, fig.height = 5, fig.show = 'hold',
+           cache = TRUE, par = TRUE)
+
+```
+
+```{r library, echo = FALSE, include = FALSE}
+library(foreign) # read foreign file objects
+install.packages("dplyr")
+library(dplyr) # manipulate data
+install.packages("ggplot2")
+library(ggplot2) # plot results
+install.packages("psych")
+library(psych) # create summary statistics
+install.packages("tm")
+install.packages("manifestoR")
+library(manifestoR)
+mp_setapikey(key = "cd35d5d2d7dfa2e1540f90d374834bad")
+my_corpus <- mp_corpus(countryname == "United Kingdom" & edate > as.Date("2000-01-01"))
+my_corpus
+
+
+```
+
+```{r}
+
+```
+

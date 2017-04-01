@@ -1,0 +1,87 @@
+---
+title: "QCA Assignment 1"
+author: "Akira Sasaki"
+date: "15/03/2017"
+output: pdf_document
+---
+```{r setup, include=FALSE, echo=FALSE}
+library("knitr")
+options(width=80)
+knitr::opts_chunk$set(message = FALSE, error = TRUE)
+opts_chunk$set(fig.path='figs/', cache.path='cache/graphics-', 
+           fig.align='center', fig.width = 5, fig.height = 5, fig.show = 'hold',
+           cache = TRUE, par = TRUE)
+```
+
+```{r library, echo = FALSE, include = FALSE}
+library(foreign)
+library(stargazer)
+library(dplyr)
+install.packages("ggplot2", repos = "http://cran.us.r-project.org")
+library(ggplot2)
+setwd('/Users/Teruteru/Downloads') #setting up directory
+MP <- read.dta("mpData (2).dta") #read dataset "MP"
+GLES <- read.dta("ZA5302_en_v6-0-0 (3).dta") #read dataset "GLES"
+```
+
+##1. Create and describe variables
+###The codes below are to clean the dataset hence it can be used to replicate the regressions in the paper. GLES data (GLES) and mpData (MP) have been installed in advance. The variable wkrnr signifies the constituency and vndkirchg means the church attendance frequency. As for vndkirchg, the higher the number is, the more frequent it means.
+
+```{r, cleaning 1}
+GLES.shrt <- data.frame(wkrnr = GLES$wkrnr, vndkirchg = GLES$vndkirchg) 
+GLES.shrt$vndkirchg <- as.numeric(GLES.shrt$vndkirchg)
+GLES.shrt2 <- GLES.shrt[(GLES.shrt$vndkirchg != 8 
+                         & GLES.shrt$vndkirchg != 9 
+                         & GLES.shrt$vndkirchg != 10),] 
+GLES.shrt3 <- GLES.shrt2[order(GLES.shrt2$wkrnr),] 
+wkrnr <- data.frame(unique(GLES.shrt3$wkrnr))
+wkrnr$vndkirchg <- unlist(by(GLES.shrt3$vndkirchg, (GLES.shrt3$wkrnr), 
+                             function(x) mean(x,na.rm=TRUE))) 
+colnames(wkrnr)[which(colnames(wkrnr) %in% c("unique.GLES.shrt3.wkrnr."))] <- c("wkrnr") 
+MP1 <- merge(MP, wkrnr, by = "wkrnr") 
+```
+###The below is the descriptive statistics of the mean church attendance frequency.
+```{r stats summary}
+stargazer(MP1[c("vndkirchg")], type = "text",
+title="Descriptive statistics", digits=1, out="html")
+```
+```{r histogram, out.width="300px"}
+c <- ggplot(MP1, aes(vndkirchg))
+c + geom_histogram(binwidth = 1)
+```
+
+##2. Replicate results
+###Firstly, the paper conducts the OLS regression explaining MP's positions.
+```{r OLS regression}
+m1 <- lm(Position ~ vndkirchg + Catholic + Prostestant + NoAffiliation + Female + Parent 
+         + FemaleParent + Theology + Medicine, MP1)
+m2 <- lm(Position ~ vndkirchg + Catholic + Prostestant + NoAffiliation + Female + Parent 
+         + FemaleParent + Theology + Medicine + Greens + CDU + CSU + Left + FDP, MP1)
+```
+###The table below shows the result of the regression.
+```{r table1, results= 'asis'}
+stargazer(m1, m2, header = FALSE, float = FALSE, 
+          title = "Determinants of MPs Postions in the Debate on Regulating PGD ", 
+          covariate.labels=c("Church Attendance in Constituency","Catholic", "Protestant",
+                             "No Religious Affiliation","Female","Parent", "Female x Parent", 
+                             "Studies in Theology", "Studies in Medicine", "Greens", "CDU", "CSU", 
+                             "The Left", "FDP"), out = "html", no.space=TRUE)
+```
+###At next, the paper analyzes the relation between vote behaviors and the same independent variables. Since the data was binary information, the fuction for logit model is used. In Baumann's paper, the table shows the two columns, "Abstention" and "Against"", however this paper only managed to account for whom voted for regulating PGD because of the data limitation.
+```{r logit}
+MP2 <- subset(MP1, MP1$vote <= 1)
+m3 <- glm(vote ~ vndkirchg + Catholic + Prostestant + NoAffiliation + Female + Parent 
+          + FemaleParent + Theology + Medicine + Greens + CDU + CSU + Left + FDP, MP2, 
+          family = binomial(link = logit)) 
+```
+###The below is the table of the result of the logit regression.
+```{r table2, results= 'asis'}
+stargazer(m3, header = FALSE, float = FALSE, 
+          title = "Determinants of Roll-Call Vote Decision on Regulating PGD", 
+          covariate.labels=c("Church Attendance in Constituency","Catholic", 
+                             "Protestant","No Religious Affiliation","Female",                       
+                             "Parent", "Female x Parent", "Studies in Theology", 
+                             "Studies in Medicine", "Greens", "CDU", "CSU", "The Left", "FDP"), 
+          out = "html", no.space=TRUE)
+```
+
