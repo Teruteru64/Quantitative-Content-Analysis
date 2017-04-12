@@ -1,0 +1,105 @@
+---
+title: "QCA Week 9"
+author: "Akira Sasaki"
+date: "12/04/2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+wdir <- getwd()
+ # if you don't have the package, install it first 
+ # install.package()
+library(stringr)
+library(dplyr)
+library(quanteda) #needs devtools & Matrix package
+library(tm)
+
+# you have to install the next package from github 
+# if you have rtools and devtools installed
+# use devtools::install_github("kbenoit/readtext")
+
+devtools::install_github("kbenoit/readtext") 
+install_github("kbenoit/readtext")
+library(readtext)
+```
+
+```{r}
+ # Gapminder dataset
+gDat <- read.csv(paste0("https://raw.githubusercontent.com/", "plotly/datasets/master/",
+"gapminderDataFiveYear.csv")) 
+# UK manifesto texts on immigration
+temp <- tempfile(fileext = ".zip") 
+download.file(paste0("https://github.com/kbenoit/ME414/",
+                     "raw/master/day8/UKimmigTexts.zip"),
+              temp)
+unzip(zipfile= temp, exdir = wdir) 
+unlink(temp)
+
+```
+
+```{r}
+help(quanteda)
+data_corpus_inaugural <- corpus(inaugTexts) 
+summary(data_corpus_inaugural)
+
+myTmCorpus <- VCorpus(DirSource(wdir, pattern = "\\.txt" )) 
+mycorpusTM <- corpus(myTmCorpus)
+
+#paste0 <- combining the strings together
+#/*.txt <- txt files regardless of the name
+```
+
+```{r}
+kwic(data_corpus_inaugural, "terror", 3)
+#3 means the number of words which precede and come after the target word
+kwic(data_corpus_inaugural, "war", 3)
+#the function is useful in terms of finding the words associated with the target word
+#there is a way to remove punctuations (from the previous class)
+mydfm <- dfm(data_corpus_inaugural, remove = stopwords("english"))
+topfeatures(mydfm, 10)
+
+mydfm2 <- dfm(data_corpus_irishbudget2010, remove = stopwords("english"))
+topfeatures(mydfm2, 10)
+
+ mydfm <- dfm(inaugTexts, groups = "President")
+ docnames(mydfm)[1:10]
+ 
+obamadfm <- dfm(corpus_subset(inaugTexts, President=="Obama"))
+plot(obamadfm)
+
+nsyllable(texts(data_corpus_irishbudget2010))
+```
+
+
+```{r}
+ibdfm <- dfm(data_corpus_irishbudget2010)
+topfeatures(ibdfm)
+ibdfm <- dfm(data_corpus_irishbudget2010, remove = stopwords("english"))
+topfeatures(ibdfm)
+
+grep('\'', levels(gDat$country), value = TRUE)
+#\ escape character --> the character following afterwards is what you are search for '\?'. when the character does not require escape, you can skip \
+```
+
+```{r}
+grep("e{2,}", levels(gDat$country), value = TRUE)
+
+ files <- list.files(wdir) 
+ grep("\\.txt", files, value = TRUE)
+ #the first \ means escape since \ itself needs to be escaped in R.
+ 
+ countries <- gsub("(.*[it].*)land$", "\\1LAND",
+      levels(gDat$country), ignore.case = T)
+ grep("LAND", countries, value = TRUE)
+ #.* is a necessary to mean that the extent of coverage includes before and after I and T. without it, it only covers I and T
+ 
+ countries1 <- gsub("([i|t])land$", "\\1 LAND"
+      levels(gDat$country), ignore.case = T)
+ grep("LAND", countries, value = TRUE)
+#<- thi doesn't work 
+```
+

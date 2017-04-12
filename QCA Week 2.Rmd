@@ -1,0 +1,67 @@
+---
+title: "QCA Week 2"
+author: "Akira Sasaki"
+date: "22/02/2017"
+output: html_document
+---
+
+```{r}
+mymat <- matrix(data = 1:60, nrow = 6, ncol = 10)
+mymat[1, 1]
+mymat
+mymat[1, 3]
+mymat[5:6, 1:5]
+mymat[5:6, c(1,3,5)]
+mymat[c(5:6), c(1,3,5)] #the same with the above
+
+```
+
+```{r}
+#data.frame
+numbers <- 1:4
+names <- c("John", "Paul", "Geroge", "Ringo")
+data.frame(numbers, names)
+```
+
+```{r}
+
+x <- factor(c("one", "two", "three", "one"))
+x
+as.numeric(x)
+levels(x)
+x <- factor(c("a", "b", "c", "a"))
+levels(x)
+as.numeric(x)
+```
+
+```{r}
+list1 <- list(beatles = c("John", "Paul", "George", "Ringo"), alive = c("Paul", "Ringo"), albums = 1:13)
+list1 #Data frame is acutually the same with list. just the style is different but it is possible to use data frame for the same purpose.
+```
+
+```{r}
+data(swiss) #load data set
+?swiss
+library(foreign)
+save(swiss, file = "/Users/Teruteru/Desktop/QCA/swiss.RData")
+```
+
+```{r}
+#loops
+m <- matrix(1:5, nrow = 1, ncol = 5)
+m
+
+for (j in 1:3){
+  m[, j] = 0
+}
+m
+
+j <- 1
+m[j] <- 0
+j <- 2
+m[j] <- 0
+j <- 3
+m[j] <- 0
+m
+```
+

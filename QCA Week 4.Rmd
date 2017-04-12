@@ -1,0 +1,37 @@
+---
+title: "QCA Week 4"
+author: "Akira Sasaki"
+date: "08/03/2017"
+output: html_document
+---
+
+ # Create a histogram
+data(swiss)
+hist(swiss$Fertility, freq=FALSE, main="Fertility Rates")
+
+# Create a dot plot
+dotchart(swiss[1:5,2], labels=rownames(swiss))
+
+ 
+ 
+```{r}
+messy <- data.frame(
+person = c("John Smith", "Jane Doe"), a = c(NA, 16), b = c(2, 11))
+
+library(tidyr)
+tidy <- gather(messy, treatment, result, a:b)
+tidy
+```
+
+```{r}
+libary(heaven)
+df <- haven::read_dta
+labels y <- attribures(df$vndkirch)
+library(foreign)
+df2 <- read.dta(file_directory)
+library(dplyr)
+dfsubset <- df2 %>% dplyr::filter(vndkirchg < "8") %>% 
+  dplyr::select(church = vndkirchg)
+range(df2)
+```
+
